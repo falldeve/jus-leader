@@ -1,0 +1,177 @@
+/* =============================================================================
+   FICHIER : src/styles/globals.css
+   RÔLE    : Styles globaux appliqués à TOUTE l'application
+   
+   Ce fichier est importé une seule fois dans src/app/layout.tsx.
+   Il sert à :
+   1. Charger la police Google Fonts (Playfair Display + DM Sans)
+   2. Initialiser Tailwind CSS avec ses 3 couches
+   3. Définir des classes CSS réutilisables avec @layer components
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   IMPORT DES POLICES GOOGLE FONTS
+   
+   On charge 2 familles de polices :
+   - "Playfair Display" : police serif élégante → utilisée pour les titres (h1, h2, h3)
+     Les variantes chargées : normal 700, normal 900 (extra-bold), italic 700
+   - "DM Sans" : police sans-serif moderne et lisible → utilisée pour le corps du texte
+     Les variantes chargées : 300 (light), 400 (normal), 500 (medium), 600 (semi-bold)
+   
+   Ces polices sont référencées dans tailwind.config.ts sous "fontFamily"
+   et disponibles via les classes Tailwind : font-playfair, font-dm
+   ----------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap");
+
+/* -----------------------------------------------------------------------------
+   LES 3 COUCHES TAILWIND CSS (ordre obligatoire)
+   
+   @tailwind base     : Réinitialise les styles par défaut du navigateur
+                        (margins, paddings, tailles de titres, etc.)
+                        C'est le "normalize.css" de Tailwind
+   
+   @tailwind components : Réserve la place pour nos classes @layer components
+                          définies ci-dessous
+   
+   @tailwind utilities  : Injecte toutes les classes utilitaires de Tailwind
+                          (flex, text-red-500, p-4, etc.)
+                          Ces classes ont la PRIORITÉ MAXIMALE (elles écrasent
+                          les classes de components si nécessaire)
+   ----------------------------------------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -----------------------------------------------------------------------------
+   @layer base
+   Styles de base appliqués aux éléments HTML natifs.
+   Ces règles s'appliquent globalement sans avoir à ajouter une classe.
+   ----------------------------------------------------------------------------- */
+@layer base {
+  html {
+    /* scroll-behavior: smooth → les liens d'ancrage (#section) scrollent
+       en douceur au lieu de sauter directement */
+    scroll-behavior: smooth;
+  }
+  body {
+    /* On applique nos classes Tailwind au body via @apply
+       @apply permet d'utiliser les utilitaires Tailwind dans du CSS classique
+       - font-dm       → DM Sans comme police par défaut
+       - bg-cream      → fond beige crème (#FDF6EC), couleur brand Leader
+       - text-gray-900 → texte presque noir par défaut
+       - overflow-x-hidden → empêche le scroll horizontal indésirable */
+    @apply font-dm bg-cream text-gray-900 overflow-x-hidden;
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   @layer components
+   Classes CSS "composées" réutilisables dans tout le projet.
+   
+   POURQUOI @layer components ?
+   → Tailwind génère des classes utilitaires très spécifiques (flex, p-4...).
+     En mettant nos classes dans @layer components, elles ont une spécificité
+     INFÉRIEURE aux utilitaires → on peut toujours les surcharger avec Tailwind.
+   
+   Ces classes s'utilisent comme n'importe quelle classe CSS :
+   <button className="btn-primary">Cliquez ici</button>
+   ----------------------------------------------------------------------------- */
+@layer components {
+  /* -------------------------------------------------------------------
+     BOUTONS
+     Chaque bouton a un style de base commun + des variantes de couleur
+     ------------------------------------------------------------------- */
+  
+  /* btn-primary : bouton plein rouge — action principale (Commander, Découvrir) */
+  .btn-primary {
+    @apply bg-crimson           /* fond rouge #8B0000 */
+           text-white           /* texte blanc */
+           px-8 py-3.5         /* padding horizontal 2rem, vertical 0.875rem */
+           rounded-full         /* coins arrondis en forme de pilule */
+           font-semibold        /* épaisseur du texte : semi-bold (600) */
+           text-base            /* taille : 1rem = 16px */
+           transition-all       /* transition sur TOUTES les propriétés CSS */
+           duration-200         /* durée : 200 millisecondes */
+           hover:bg-crimson-light     /* au survol : rouge légèrement plus clair */
+           hover:-translate-y-0.5    /* au survol : remonte de 2px → effet "lift" */
+           inline-block;        /* s'affiche en ligne mais accepte padding/margin */
+  }
+
+  /* btn-outline : bouton avec bordure rouge — action secondaire */
+  .btn-outline {
+    @apply border-2             /* bordure épaisse 2px */
+           border-crimson       /* couleur de bordure rouge */
+           text-crimson         /* texte rouge */
+           px-8 py-3.5
+           rounded-full
+           font-semibold
+           text-base
+           transition-all
+           duration-200
+           hover:bg-crimson     /* au survol : fond devient rouge */
+           hover:text-white     /* au survol : texte devient blanc */
+           inline-block;
+  }
+
+  /* btn-whatsapp : bouton vert WhatsApp avec icône SVG */
+  .btn-whatsapp {
+    @apply bg-[#25D366]         /* couleur verte officielle de WhatsApp */
+           text-white
+           px-8 py-4
+           rounded-full
+           font-bold
+           text-base
+           transition-all
+           duration-200
+           hover:-translate-y-1       /* remonte de 4px au survol */
+           hover:shadow-lg            /* ombre portée au survol */
+           inline-flex               /* flexbox en ligne (pour aligner icône + texte) */
+           items-center              /* centrage vertical de l'icône et du texte */
+           gap-3;                    /* espace de 12px entre icône et texte */
+  }
+
+  /* -------------------------------------------------------------------
+     TYPOGRAPHIE DE SECTION
+     Classes utilisées systématiquement pour les en-têtes de sections
+     ------------------------------------------------------------------- */
+
+  /* section-eyebrow : petit texte en majuscules au-dessus du titre principal
+     Exemple : "▷▷◁ NOS PRODUITS" */
+  .section-eyebrow {
+    @apply text-xs              /* 12px */
+           font-semibold        /* 600 */
+           tracking-[0.12em]    /* espacement des lettres très large → effet "aéré" */
+           uppercase            /* tout en majuscules */
+           mb-2;                /* marge basse 8px */
+  }
+
+  /* section-title : titre principal de section (h2 en général)
+     Utilise Playfair Display pour l'élégance */
+  .section-title {
+    @apply font-playfair        /* police Playfair Display définie dans tailwind.config.ts */
+           text-3xl             /* 30px */
+           md:text-4xl          /* 36px sur écrans medium et plus grands */
+           font-bold            /* 700 */
+           leading-tight;       /* interligne serré (1.25) → les grands titres se lisent mieux */
+  }
+
+  /* tri-divider : séparateur décoratif utilisant les triangles de l'étiquette Leader
+     Reproduit le motif "▷▷◁" présent sur les vraies étiquettes des bouteilles */
+  .tri-divider {
+    @apply text-center
+           text-crimson
+           opacity-30           /* très transparent → discret */
+           tracking-[0.6em]     /* espacement maximal entre les triangles */
+           text-sm
+           py-4;
+  }
+
+  /* card-hover : effet d'élévation au survol — appliqué aux cartes produit
+     Donne l'impression que la carte "se soulève" quand on la survole */
+  .card-hover {
+    @apply transition-all
+           duration-300         /* animation plus lente (300ms) → plus fluide */
+           hover:-translate-y-2      /* remonte de 8px */
+           hover:shadow-2xl;         /* ombre profonde → renforce l'effet 3D */
+  }
+}
